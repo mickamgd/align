@@ -1,0 +1,79 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.mocks.dart"
+  errors:
+    # Rend certaines pratiques non négociables
+    missing_required_param: error
+    missing_return: error
+    dead_code: error
+    unused_import: error
+    unused_local_variable: error
+    invalid_annotation_target: ignore
+
+linter:
+  rules:
+    # --- Style & lisibilité ---
+    always_declare_return_types: true
+    always_put_required_named_parameters_first: true
+    always_require_non_null_named_parameters: true
+    annotate_overrides: true
+    avoid_print: true
+    avoid_unnecessary_containers: true
+    avoid_returning_null_for_future: true
+    avoid_types_as_parameter_names: true
+    avoid_void_async: true
+    camel_case_types: true
+    cancel_subscriptions: true
+    close_sinks: true
+    directives_ordering: true
+    empty_catches: true
+    empty_constructor_bodies: true
+    file_names: true
+    flutter_style_todos: true
+    leading_newlines_in_multiline_strings: true
+    no_adjacent_strings_in_list: true
+    omit_local_variable_types: false
+    only_throw_errors: true
+    package_api_docs: false
+    prefer_final_fields: true
+    prefer_final_locals: true
+    prefer_final_in_for_each: true
+    prefer_const_constructors: true
+    prefer_const_constructors_in_immutables: true
+    prefer_const_literals_to_create_immutables: true
+    prefer_const_declarations: true
+    prefer_expression_function_bodies: false
+    prefer_interpolation_to_compose_strings: true
+    prefer_is_empty: true
+    prefer_is_not_empty: true
+    prefer_single_quotes: true
+    require_trailing_commas: true
+    sort_child_properties_last: true
+    sort_constructors_first: false
+    sort_pub_dependencies: false
+    unnecessary_await_in_return: true
+    unnecessary_brace_in_string_interps: true
+    unnecessary_lambdas: false
+    unnecessary_new: true
+    unnecessary_this: true
+    use_colored_box: true
+    use_decorated_box: true
+    use_full_hex_values_for_flutter_colors: true
+    use_key_in_widget_constructors: true
+
+    # --- Null safety / bonnes pratiques ---
+    avoid_dynamic_calls: true
+    cast_nullable_to_non_nullable: true
+    null_closures: true
+    unnecessary_null_checks: true
+
+    # --- Async / streams ---
+    await_only_futures: true
+    unawaited_futures: true
+
+    # --- Imports ---
+    depend_on_referenced_packages: true

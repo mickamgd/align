@@ -84,15 +84,21 @@ class OnlineGameController extends GameController {
     await _roomSubscription?.cancel();
 
     final repository = ref.read(onlineRoomRepositoryProvider);
+    int errorCount = 0;
+    const maxErrors = 5;
+
     _roomSubscription = repository
         .watchRoom(roomId)
         .listen(
           (room) async {
+            errorCount = 0;
             await _syncFromRoom(room);
           },
           onError: (error) {
-            // Keep listening even on errors (room might be recreated)
-            // Only cancel on critical errors
+            errorCount++;
+            if (errorCount >= maxErrors) {
+              cleanup(); // Stop listening after 5 errors
+            }
           },
           cancelOnError: false,
         );
@@ -161,7 +167,7 @@ class OnlineGameController extends GameController {
 
       if (_pendingCleanupAfterGameOver) {
         _pendingCleanupAfterGameOver = false;
-        cleanup();
+        await cleanup();
       }
     }
 
@@ -313,14 +319,17 @@ class OnlineGameController extends GameController {
 
   Future<void> cleanup() async {
     _pendingCleanupAfterGameOver = false;
-    await _roomSubscription?.cancel();
+
+    final sub = _roomSubscription;
     _roomSubscription = null;
     _currentRoomId = null;
+
+    await sub?.cancel();
   }
 
   /// Reset to initial state (call when switching to local game)
-  void reset() {
-    cleanup();
+  Future<void> reset() async {
+    await cleanup();
     state = super.build();
   }
 }

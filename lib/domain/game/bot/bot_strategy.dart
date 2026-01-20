@@ -11,17 +11,11 @@ abstract class BotStrategy {
 
 /// Niveau Easy : coup aléatoire valide
 class EasyBotStrategy implements BotStrategy {
+  final Random _random = Random();
+
   @override
   int selectMove(Board board, Player botPlayer) {
-    final validMoves = <int>[];
-    for (int i = 0; i < board.cells.length; i++) {
-      if (board.isEmptyAt(i)) {
-        validMoves.add(i);
-      }
-    }
-
-    validMoves.shuffle();
-    return validMoves.first;
+    return _BotUtils.randomMove(board, random: _random);
   }
 }
 
@@ -33,54 +27,24 @@ class MediumBotStrategy implements BotStrategy {
   int selectMove(Board board, Player botPlayer) {
     final opponent = botPlayer.opponent;
 
-    // 10% de chance de jouer un coup random (erreur humaine)
-    if (_random.nextInt(100) < 10) {
-      return EasyBotStrategy().selectMove(board, botPlayer);
+    if (_random.nextInt(100) < 15) {
+      return _BotUtils.randomMove(board, random: _random);
     }
 
-    // 1. Gagner si possible
-    final winMove = _findWinningMove(board, botPlayer);
-    if (winMove != null) return winMove;
+    final win = _BotUtils.winningMove(board, botPlayer);
+    if (win != null) return win;
 
-    // 2. Bloquer l'adversaire
-    final blockMove = _findWinningMove(board, opponent);
-    if (blockMove != null) return blockMove;
+    final block = _BotUtils.winningMove(board, opponent);
+    if (block != null) return block;
 
-    // 3. Prendre le centre (3x3 uniquement)
-    if (board.size == 3) {
-      const center = 4; // index du centre en 3x3
-      if (board.isEmptyAt(center)) return center;
+    if (board.size == 3 && board.isEmptyAt(4)) return 4;
+
+    final corners = _BotUtils.corners(board)..shuffle(_random);
+    for (final c in corners) {
+      if (board.isEmptyAt(c)) return c;
     }
 
-    // 4. Prendre un coin
-    final corners = _getCorners(board);
-    for (final corner in corners) {
-      if (board.isEmptyAt(corner)) return corner;
-    }
-
-    // 5. N'importe quel coup valide
-    return EasyBotStrategy().selectMove(board, botPlayer);
-  }
-
-  /// Trouve un coup gagnant pour le joueur donné
-  int? _findWinningMove(Board board, Player player) {
-    for (int i = 0; i < board.cells.length; i++) {
-      if (!board.isEmptyAt(i)) continue;
-
-      final testBoard = board.placeAt(i, player);
-      final result = Rules.evaluate(testBoard);
-
-      if (result is Win && result.winner == player) {
-        return i;
-      }
-    }
-    return null;
-  }
-
-  /// Retourne les indices des coins du plateau
-  List<int> _getCorners(Board board) {
-    final size = board.size;
-    return [0, size - 1, size * (size - 1), size * size - 1];
+    return _BotUtils.randomMove(board, random: _random);
   }
 }
 
@@ -91,57 +55,50 @@ class HardBotStrategy implements BotStrategy {
     final opponent = botPlayer.opponent;
 
     // 1. Gagner immédiatement
-    final winMove = _findWinningMove(board, botPlayer);
+    final winMove = _BotUtils.winningMove(board, botPlayer);
     if (winMove != null) return winMove;
 
     // 2. Bloquer l'adversaire
-    final blockMove = _findWinningMove(board, opponent);
+    final blockMove = _BotUtils.winningMove(board, opponent);
     if (blockMove != null) return blockMove;
 
-    // 3. Créer une fourchette (2+ menaces)
-    final forkMove = _findForkMove(board, botPlayer);
+    // 3. Prendre le centre
+    if (board.size == 3 && board.isEmptyAt(4)) {
+      return 4;
+    }
+
+    // 4. Créer une fourchette (2+ menaces)
+    final forkMove = board.size == 3 ? _findForkMove(board, botPlayer) : null;
     if (forkMove != null) return forkMove;
 
-    // 4. Bloquer une fourchette adverse
-    final blockForkMove = _findForkMove(board, opponent);
+    // 5. Bloquer une fourchette adverse
+    final blockForkMove = board.size == 3
+        ? _findForkMove(board, opponent)
+        : null;
     if (blockForkMove != null) return blockForkMove;
 
-    // 5. Jouer sur la meilleure ligne
+    // 6. Jouer sur la meilleure ligne
     final bestLineMove = _findBestLineMove(board, botPlayer);
     if (bestLineMove != null) return bestLineMove;
 
-    // 6. Position stratégique
+    // 7. Position stratégique
     final strategicMove = _findStrategicPosition(board);
     if (strategicMove != null) return strategicMove;
 
-    // 7. Fallback
-    return EasyBotStrategy().selectMove(board, botPlayer);
-  }
-
-  int? _findWinningMove(Board board, Player player) {
-    for (int i = 0; i < board.cells.length; i++) {
-      if (!board.isEmptyAt(i)) continue;
-      final testBoard = board.placeAt(i, player);
-      final result = Rules.evaluate(testBoard);
-      if (result is Win && result.winner == player) return i;
-    }
-    return null;
+    // 8. Fallback
+    return _BotUtils.randomMove(board);
   }
 
   int? _findForkMove(Board board, Player player) {
-    for (int i = 0; i < board.cells.length; i++) {
-      if (!board.isEmptyAt(i)) continue;
+    for (final i in _BotUtils.validMoves(board)) {
+      final afterFirst = board.placeAt(i, player);
+      var threats = 0;
 
-      final testBoard = board.placeAt(i, player);
-      int threats = 0;
-
-      // Compte les menaces créées
-      for (int j = 0; j < board.cells.length; j++) {
-        if (!testBoard.isEmptyAt(j)) continue;
-        final testBoard2 = testBoard.placeAt(j, player);
-        if (Rules.evaluate(testBoard2) is Win) {
+      for (final j in _BotUtils.validMoves(afterFirst)) {
+        final res = Rules.evaluate(afterFirst.placeAt(j, player));
+        if (res is Win && res.winner == player) {
           threats++;
-          if (threats >= 2) return i; // Fourchette !
+          if (threats >= 2) return i;
         }
       }
     }
@@ -231,5 +188,35 @@ class HardBotStrategy implements BotStrategy {
     lines.add(List.generate(size, (i) => i * size + (size - 1 - i)));
 
     return lines;
+  }
+}
+
+class _BotUtils {
+  static List<int> validMoves(Board board) {
+    final moves = <int>[];
+    for (int i = 0; i < board.cells.length; i++) {
+      if (board.isEmptyAt(i)) moves.add(i);
+    }
+    return moves;
+  }
+
+  static int? winningMove(Board board, Player player) {
+    for (final i in validMoves(board)) {
+      final res = Rules.evaluate(board.placeAt(i, player));
+      if (res is Win && res.winner == player) return i;
+    }
+    return null;
+  }
+
+  static List<int> corners(Board board) {
+    final s = board.size;
+    return [0, s - 1, s * (s - 1), s * s - 1];
+  }
+
+  static int randomMove(Board board, {Random? random}) {
+    final moves = validMoves(board);
+    if (moves.isEmpty) return 0; // ne devrait jamais arriver si game over géré
+    moves.shuffle(random);
+    return moves.first;
   }
 }

@@ -36,11 +36,6 @@ class AuthController extends Notifier<AuthState> {
     final currentUser = _repository.currentUser;
 
     if (currentUser != null) {
-      Future.microtask(() {
-        ref
-            .read(profileControllerProvider.notifier)
-            .loadProfileForUser(currentUser.uid);
-      });
       return AuthState(user: currentUser);
     }
 

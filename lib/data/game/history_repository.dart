@@ -15,19 +15,6 @@ class HistoryRepository {
     await _historyCollection().doc(history.id).set(history.toJson());
   }
 
-  /// Récupère l'historique des parties d'un utilisateur
-  Future<List<GameHistory>> getUserHistory(String? userId) async {
-    final snapshot = await _historyCollection()
-        .where('userId', isEqualTo: userId)
-        .orderBy('playedAt', descending: true)
-        .limit(50)
-        .get();
-
-    return snapshot.docs
-        .map((doc) => GameHistory.fromJson(doc.data()))
-        .toList();
-  }
-
   /// Écoute les changements de l'historique en temps réel
   Stream<List<GameHistory>> watchUserHistory(String? userId) {
     if (userId == null) return Stream.value([]);
@@ -37,13 +24,10 @@ class HistoryRepository {
         .orderBy('playedAt', descending: true)
         .limit(50)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GameHistory.fromJson(doc.data()))
-            .toList());
-  }
-
-  /// Supprime une partie de l'historique
-  Future<void> deleteGame(String gameId) async {
-    await _historyCollection().doc(gameId).delete();
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => GameHistory.fromJson(doc.data()))
+              .toList(),
+        );
   }
 }

@@ -99,6 +99,7 @@ class _GameCellState extends State<GameCell>
                       style: GoogleFonts.poppins(
                         fontSize: AppFontSize.ultra,
                         fontWeight: AppFontWeight.black,
+                        height: 1,
                         color: Colors.white,
                         shadows: [
                           Shadow(

@@ -155,11 +155,15 @@ class _SignupFlowScreenState extends ConsumerState<SignupFlowScreen> {
     FocusScope.of(context).unfocus();
 
     if (signupState.step == 0) {
-      final ok = _identityFormKey.currentState?.validate() ?? false;
+      final ok =
+          (_identityFormKey.currentState?.validate() ?? false) &&
+          signupState.isIdentityValid;
       if (!ok) return;
       ctrl.nextStep();
     } else {
-      final ok = _credentialsFormKey.currentState?.validate() ?? false;
+      final ok =
+          (_credentialsFormKey.currentState?.validate() ?? false) &&
+          signupState.isCredentialsValid;
       if (!ok) return;
       await _submitSignup(s);
     }

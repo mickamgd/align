@@ -16,14 +16,6 @@ class SignupController extends Notifier<SignupState> {
     state = state.copyWith(email: email, password: password);
   }
 
-  void next() {
-    state = state.copyWith(step: state.step + 1);
-  }
-
-  void back() {
-    state = state.copyWith(step: state.step - 1);
-  }
-
   void setDisplayName(String value) =>
       state = state.copyWith(displayName: value);
 

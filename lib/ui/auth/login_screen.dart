@@ -102,6 +102,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   CustomTextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
+                    hintText: 'jean@doe.fr',
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Veuillez entrer votre email';
@@ -129,6 +130,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   CustomTextField(
                     controller: _passwordController,
                     obscureText: true,
+                    hintText: '******',
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Veuillez entrer votre mot de passe';

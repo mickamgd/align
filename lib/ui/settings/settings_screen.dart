@@ -5,6 +5,7 @@ import 'package:align/app/ui_constants.dart';
 import 'package:align/domain/profile/emoji_catalog.dart';
 import 'package:align/ui/auth/signup_flow/widgets/emoji_picker.dart';
 import 'package:align/ui/shared/bottom_nav_bar.dart';
+import 'package:align/ui/shared/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -311,12 +312,14 @@ class _EditProfileBottomSheetState
     extends ConsumerState<_EditProfileBottomSheet> {
   late TextEditingController _nameController;
   late int _selectedEmojiIndex;
+  late final GlobalKey<FormState> _formKey;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.currentName);
     _selectedEmojiIndex = widget.currentEmojiIndex;
+    _formKey = GlobalKey<FormState>();
   }
 
   @override
@@ -338,104 +341,99 @@ class _EditProfileBottomSheetState
       child: SafeArea(
         child: Padding(
           padding: AppSpacing.paddingXXL,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Modifier le profil', style: AppTextStyles.titleLarge),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close_rounded),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Modifier le profil', style: AppTextStyles.titleLarge),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close_rounded),
+                      color: AppColors.textSecondary,
+                    ),
+                  ],
+                ),
+
+                AppSpacing.verticalXXL,
+
+                Text(
+                  'Nom d\'affichage',
+                  style: AppTextStyles.labelSmall.copyWith(
                     color: AppColors.textSecondary,
                   ),
-                ],
-              ),
-
-              AppSpacing.verticalXXL,
-
-              Text(
-                'Nom d\'affichage',
-                style: AppTextStyles.labelSmall.copyWith(
-                  color: AppColors.textSecondary,
                 ),
-              ),
-              AppSpacing.verticalSM,
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
+                AppSpacing.verticalSM,
+                CustomTextField(
+                  controller: _nameController,
                   hintText: 'Entrez votre nom',
-                  border: OutlineInputBorder(
-                    borderRadius: AppBorderRadius.radiusSM,
-                    borderSide: const BorderSide(color: AppColors.textMuted),
+                  validator: (value) {
+                    final v = (value ?? '').trim();
+                    if (v.isEmpty) {
+                      return 'Veuillez entrer un nom';
+                    }
+
+                    if (v.length < 3) {
+                      return 'Le nom doit contenir au moins 3 caractères';
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: (_) => _saveProfile(),
+                ),
+
+                AppSpacing.verticalXXL,
+
+                Text(
+                  'Choisissez un avatar',
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: AppColors.textSecondary,
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: AppBorderRadius.radiusSM,
-                    borderSide: const BorderSide(color: AppColors.textMuted),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: AppBorderRadius.radiusSM,
-                    borderSide: const BorderSide(
-                      color: AppColors.greenDark,
-                      width: 2,
+                ),
+                AppSpacing.verticalMD,
+
+                SizedBox(
+                  height: 250,
+                  child: SingleChildScrollView(
+                    child: EmojiPicker(
+                      selectedIndex: _selectedEmojiIndex,
+                      onSelected: (index) {
+                        setState(() {
+                          _selectedEmojiIndex = index;
+                        });
+                      },
                     ),
                   ),
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
                 ),
-              ),
 
-              AppSpacing.verticalXXL,
+                AppSpacing.verticalXXL,
 
-              Text(
-                'Choisissez un avatar',
-                style: AppTextStyles.labelSmall.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              AppSpacing.verticalMD,
-
-              SizedBox(
-                height: 250,
-                child: SingleChildScrollView(
-                  child: EmojiPicker(
-                    selectedIndex: _selectedEmojiIndex,
-                    onSelected: (index) {
-                      setState(() {
-                        _selectedEmojiIndex = index;
-                      });
-                    },
-                  ),
-                ),
-              ),
-
-              AppSpacing.verticalXXL,
-
-              // Bouton Enregistrer
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _saveProfile,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.greenDark,
-                    foregroundColor: Colors.white,
-                    padding: AppSpacing.paddingVerticalLG,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: AppBorderRadius.radiusMD,
+                // Bouton Enregistrer
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _saveProfile,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.greenDark,
+                      foregroundColor: Colors.white,
+                      padding: AppSpacing.paddingVerticalLG,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: AppBorderRadius.radiusMD,
+                      ),
+                      elevation: 0,
                     ),
-                    elevation: 0,
+                    child: Text(
+                      'Enregistrer',
+                      style: AppTextStyles.labelMedium,
+                    ),
                   ),
-                  child: Text('Enregistrer', style: AppTextStyles.labelMedium),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -443,18 +441,11 @@ class _EditProfileBottomSheetState
   }
 
   Future<void> _saveProfile() async {
-    final newName = _nameController.text.trim();
-    if (newName.length < 3) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Le nom doit contenir au moins 3 caractères'),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
-    }
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) return;
 
-    // Appelle ProfileController (Clean Architecture: UI -> Controller -> Repository)
+    final newName = _nameController.text.trim();
+
     await ref
         .read(profileControllerProvider.notifier)
         .updateProfile(displayName: newName, emojiIndex: _selectedEmojiIndex);

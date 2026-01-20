@@ -11,7 +11,9 @@ final historyRepositoryProvider = Provider<HistoryRepository>((ref) {
 });
 
 /// Récupère l'historique du user courant en temps réel
-final userHistoryProvider = StreamProvider.autoDispose<List<GameHistory>>((ref) {
+final userHistoryProvider = StreamProvider.autoDispose<List<GameHistory>>((
+  ref,
+) {
   final authState = ref.watch(authControllerProvider);
   final userId = authState.user?.uid;
   final repository = ref.watch(historyRepositoryProvider);
@@ -36,18 +38,11 @@ class HistoryController {
       await _repository.saveGame(history);
       AppLogger.info('Game saved to history', history.id);
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to save game to history', error: e, stackTrace: stackTrace);
-      rethrow;
-    }
-  }
-
-  /// Supprime une partie de l'historique
-  Future<void> deleteGame(String gameId) async {
-    try {
-      await _repository.deleteGame(gameId);
-      AppLogger.info('Game deleted from history', gameId);
-    } catch (e, stackTrace) {
-      AppLogger.error('Failed to delete game from history', error: e, stackTrace: stackTrace);
+      AppLogger.error(
+        'Failed to save game to history',
+        error: e,
+        stackTrace: stackTrace,
+      );
       rethrow;
     }
   }

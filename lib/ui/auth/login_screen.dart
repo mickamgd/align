@@ -2,6 +2,7 @@ import 'package:align/app/auth/auth_controller.dart';
 import 'package:align/app/router.dart';
 import 'package:align/app/theme.dart';
 import 'package:align/app/ui_constants.dart';
+import 'package:align/ui/shared/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -98,43 +99,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ),
                   AppSpacing.verticalSM,
-                  TextFormField(
+                  CustomTextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      hintText: 'votre@email.com',
-                      filled: true,
-                      fillColor: AppColors.surface,
-                      border: OutlineInputBorder(
-                        borderRadius: AppBorderRadius.radiusMD,
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: AppBorderRadius.radiusMD,
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: AppBorderRadius.radiusMD,
-                        borderSide: const BorderSide(
-                          color: AppColors.greenDark,
-                          width: 2,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: AppBorderRadius.radiusMD,
-                        borderSide: const BorderSide(
-                          color: AppColors.error,
-                          width: 2,
-                        ),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: AppBorderRadius.radiusMD,
-                        borderSide: const BorderSide(
-                          color: AppColors.error,
-                          width: 2,
-                        ),
-                      ),
-                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Veuillez entrer votre email';
@@ -159,44 +126,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ),
                   AppSpacing.verticalSM,
-                  TextFormField(
+                  CustomTextField(
                     controller: _passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(
-                      hintText: '••••••••',
-
-                      filled: true,
-                      fillColor: AppColors.surface,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: AppBorderRadius.radiusMD,
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: AppBorderRadius.radiusMD,
-                        borderSide: const BorderSide(
-                          color: AppColors.greenDark,
-                          width: 2,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: AppBorderRadius.radiusMD,
-                        borderSide: const BorderSide(
-                          color: AppColors.error,
-                          width: 2,
-                        ),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: AppBorderRadius.radiusMD,
-                        borderSide: const BorderSide(
-                          color: AppColors.error,
-                          width: 2,
-                        ),
-                      ),
-                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Veuillez entrer votre mot de passe';

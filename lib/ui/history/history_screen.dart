@@ -2,6 +2,7 @@ import 'package:align/app/history/history_controller.dart';
 import 'package:align/app/theme.dart';
 import 'package:align/ui/history/widgets/history_card.dart';
 import 'package:align/ui/shared/bottom_nav_bar.dart';
+import 'package:align/ui/shared/firestore_error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -84,14 +85,47 @@ class HistoryScreen extends ConsumerWidget {
                     loading: () => const SliverFillRemaining(
                       child: Center(child: CircularProgressIndicator()),
                     ),
-                    error: (error, _) => SliverFillRemaining(
-                      child: Center(
-                        child: Text(
-                          'Erreur: $error',
-                          style: AppTextStyles.bodyMedium,
+                    error: (error, _) {
+                      final msg = historyErrorMessage(error);
+
+                      return SliverFillRemaining(
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.error_outline,
+                                  size: 56,
+                                  color: Colors.grey,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  msg.title,
+                                  style: AppTextStyles.headlineSmall,
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  msg.body,
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: Colors.grey,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 16),
+                                OutlinedButton(
+                                  onPressed: () =>
+                                      ref.invalidate(userHistoryProvider),
+                                  child: const Text('Réessayer'),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                   const SliverToBoxAdapter(child: SizedBox(height: 20)),
                 ],

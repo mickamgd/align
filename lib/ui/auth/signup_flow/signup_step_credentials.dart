@@ -1,6 +1,7 @@
 import 'package:align/app/auth/signup/signup_controller.dart';
 import 'package:align/app/theme.dart';
 import 'package:align/app/ui_constants.dart';
+import 'package:align/ui/shared/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -56,10 +57,10 @@ class _SignupStepCredentialsState extends ConsumerState<SignupStepCredentials>
         children: [
           Text('Vos identifiants', style: AppTextStyles.headlineSmall),
           AppSpacing.verticalXL,
-          TextFormField(
+          CustomTextField(
             controller: _emailCtrl,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(hintText: 'Email'),
+            hintText: 'Email',
             validator: (v) {
               final value = (v ?? '').trim();
               final ok = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value);
@@ -70,13 +71,12 @@ class _SignupStepCredentialsState extends ConsumerState<SignupStepCredentials>
 
           AppSpacing.verticalMD,
 
-          TextFormField(
+          CustomTextField(
             controller: _pwdCtrl,
             obscureText: true,
-            decoration: const InputDecoration(
-              hintText: 'Mot de passe',
-              helperText: 'Minimum 6 caractères',
-            ),
+            hintText: 'Mot de passe',
+            helperText: 'Minimum 6 caractères',
+
             validator: (v) {
               if ((v ?? '').length < 6) return 'Minimum 6 caractères';
               return null;

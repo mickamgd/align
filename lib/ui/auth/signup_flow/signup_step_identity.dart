@@ -2,6 +2,7 @@ import 'package:align/app/auth/signup/signup_controller.dart';
 import 'package:align/app/theme.dart';
 import 'package:align/app/ui_constants.dart';
 import 'package:align/ui/auth/signup_flow/widgets/emoji_picker.dart';
+import 'package:align/ui/shared/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -62,9 +63,9 @@ class _SignupStepIdentityState extends ConsumerState<SignupStepIdentity>
             style: AppTextStyles.headlineSmall,
           ),
           AppSpacing.verticalXL,
-          TextFormField(
+          CustomTextField(
             controller: _nameCtrl,
-            decoration: const InputDecoration(hintText: 'Nom'),
+            hintText: 'Nom',
             validator: (v) {
               final value = (v ?? '').trim();
               if (value.length < 3) return 'Minimum 3 caractères';

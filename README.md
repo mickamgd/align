@@ -17,7 +17,6 @@
 - [Setup du projet](#-setup-du-projet)
 - [Tests](#-tests)
 - [Structure du projet](#-structure-du-projet)
-- [Évolutions futures](#-évolutions-futures)
 
 ---
 
@@ -26,7 +25,7 @@
 **Align!** est une application mobile Flutter de Morpion moderne avec support de multiples tailles de grilles (3×3, 4×4, 5×5).
 
 L'application propose :
-- **Jeu local** contre une IA avec 3 niveaux de difficulté
+- **Jeu local** contre une IA avec 3 niveaux de difficulté ou contre un invité
 - **Matchmaking en ligne** (PvP temps réel via Firestore)
 - **Système d'authentification** complet avec onboarding personnalisé
 - **Historique des parties**
@@ -442,36 +441,6 @@ lib/
 
 ---
 
-## 🔮 Évolutions futures
-
-### Features
-
-- [ ] **Reconnexion automatique** : Si un joueur se déconnecte, sauvegarder le `roomId` et lui permettre de reprendre
-- [ ] **Timeout de partie** : Si un joueur est inactif 30s, abandon automatique
-- [ ] **Système de classement** : ELO/ranking pour le matchmaking compétitif
-- [ ] **Notifications push** : "C'est votre tour !" (Firebase Cloud Messaging)
-- [ ] **Avatars personnalisés** : Upload d'image via Firebase Storage
-- [ ] **Mode spectateur** : Regarder des parties en cours
-- [ ] **Tournois** : Organisation de brackets avec élimination directe
-
-### Architecture
-
-- [ ] **Use cases explicites** : Si les flows deviennent complexes (tournois, challenges, amis)
-- [ ] **Backend custom** : Remplacer Firestore par un backend Node.js/Dart Frog pour :
-  - Reconnexion robuste avec WebSockets
-  - Validation serveur des coups (anti-triche)
-  - Matchmaking basé sur l'ELO
-- [ ] **Tests d'intégration** : Firebase Emulator + tests E2E avec `patrol`
-- [ ] **CI/CD** : GitHub Actions pour build + deploy automatique (Firebase App Distribution)
-
-### Performance
-
-- [ ] **Optimisation des rebuilds** : Audit avec DevTools + ajout de `select()` ciblés
-- [ ] **Lazy loading** : Pagination sur l'historique (actuellement limité à 50)
-- [ ] **Offline-first** : Utiliser Firestore offline persistence pour jouer sans réseau
-
----
-
 ## 📝 Notes techniques
 
 ### Logs
@@ -491,4 +460,4 @@ Non configurés dans ce projet (hors scope test technique).
 
 ### Sécurité
 
-- **Email verification** : Non activé (feature désactivée pour simplifier l'UX)
+- **Email verification** : Non activé (feature désactivée pour simplifier l'UX sur un test)
